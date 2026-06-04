@@ -1,5 +1,5 @@
-import { Course } from '@/features/courses';
-import { Role, User } from '@/features/users';
+import { Course } from '@/features/courses/types';
+import { Role, User } from '@/features/users/types';
 
 export interface SignInResponse {
   id: string;

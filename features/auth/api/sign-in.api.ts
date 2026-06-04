@@ -14,6 +14,7 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      transformResponse: (response: { data: AuthState }) => response.data,
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
@@ -30,6 +31,7 @@ export const authApi = baseApi.injectEndpoints({
 
     getMe: builder.query<AuthState, void>({
       query: () => '/auth/current-user',
+      transformResponse: (response: { data: AuthState }) => response.data,
       onQueryStarted: async (args, { dispatch, queryFulfilled }) => {
         const res = await queryFulfilled;
         if (res.data) {
