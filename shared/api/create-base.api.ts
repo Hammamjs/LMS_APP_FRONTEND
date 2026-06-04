@@ -6,8 +6,10 @@ import {
   fetchBaseQuery,
 } from '@reduxjs/toolkit/query/react';
 import { logout, setCredentials } from '@/features/auth/store/sign-in.store';
-import { AuthState } from '@/features/auth';
+import { AuthState } from '@/features/auth/types';
 import { userKey } from '@/features/auth/constants/user.key';
+import { notificationKey } from '@/features/notification/constants';
+import { reviewKey } from '@/features/reviews/constants';
 
 interface StateWithAuth {
   auth: AuthState;
@@ -60,5 +62,11 @@ export const baseApi = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithReauth,
   endpoints: () => ({}),
-  tagTypes: [userKey.type, courseKey.type, lessonKey.type],
+  tagTypes: [
+    userKey.type,
+    courseKey.type,
+    lessonKey.type,
+    notificationKey.type,
+    reviewKey.type,
+  ],
 });
