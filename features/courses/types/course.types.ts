@@ -1,4 +1,4 @@
-import { type User } from '@/features/users';
+import { type User } from '@/features/users/types';
 
 export enum Level {
   Beginner = 'Beginner',

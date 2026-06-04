@@ -1,4 +1,5 @@
 'use client';
+import { useEffect, useState } from 'react';
 import { useCoursesQuery } from '../api/courses.api';
 import { Level } from '../types/course.types';
 

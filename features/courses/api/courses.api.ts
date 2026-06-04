@@ -4,6 +4,7 @@ import {
   Course,
   CourseRequest,
   EnrolledCourse,
+  Level,
   UpdateCourseRequest,
 } from '../types/course.types';
 import { Result } from '@/shared/types';
@@ -24,6 +25,7 @@ type CourseQuery = {
   category?: string;
   instructorId?: string;
   search?: string;
+  level?: Level | 'all';
 };
 
 const defaultObject: CourseQuery = {
@@ -31,19 +33,35 @@ const defaultObject: CourseQuery = {
   category: '',
   instructorId: '',
   search: '',
+  level: undefined,
 };
 
 export const CoursesApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     // Getter -> public route
     courses: builder.query<CourseResponse, CourseQuery>({
-      query: ({ page, category, instructorId, search } = defaultObject) => ({
-        url: 'courses',
-        params: { page, category, instructorId, search },
-      }),
+      query: ({
+        page,
+        category,
+        instructorId,
+        search,
+        level,
+      } = defaultObject) => {
+        const params: Record<string, number | string> = { page };
+
+        if (category) params.category = category;
+        if (instructorId) params.instructorId = instructorId;
+        if (search) params.search = search;
+        if (level && level !== 'all') params.level = level;
+
+        return {
+          url: 'courses',
+          params,
+        };
+      },
 
       serializeQueryArgs: ({ endpointName, queryArgs }) =>
-        `${endpointName}-${queryArgs.category}-${queryArgs.instructorId}-${queryArgs.search}`,
+        `${endpointName}-${queryArgs.category}-${queryArgs.instructorId}-${queryArgs.search}-${queryArgs.level}`,
 
       merge: (currentCache, newItems) => {
         if (newItems.meta.page == 1) {
@@ -58,6 +76,7 @@ export const CoursesApi = baseApi.injectEndpoints({
       forceRefetch: ({ currentArg, previousArg }) =>
         currentArg?.page !== previousArg?.page ||
         currentArg?.search !== previousArg?.search ||
+        currentArg?.level !== previousArg?.level ||
         currentArg?.category !== previousArg?.category ||
         currentArg?.instructorId !== previousArg?.instructorId,
 
@@ -70,10 +89,14 @@ export const CoursesApi = baseApi.injectEndpoints({
         credentials: 'include',
       }),
 
+      transformResponse: (response: { data: Course }): Course => {
+        return response.data;
+      },
+
       providesTags: (_result, _error, { id }) => [courseKey.details(id)],
     }),
 
-    courseCategories: builder.query<string[], void>({
+    courseCategories: builder.query<{ data: string[] }, void>({
       query: () => '/courses/categories',
     }),
 
@@ -101,7 +124,7 @@ export const CoursesApi = baseApi.injectEndpoints({
 
     deleteCourse: builder.mutation<void, { id: string }>({
       query: ({ id }) => ({
-        url: `/course/${id}`,
+        url: `/courses/${id}`,
         credentials: 'include',
         method: 'DELETE',
       }),
@@ -127,6 +150,8 @@ export const CoursesApi = baseApi.injectEndpoints({
         params: { courseId, userId },
         credentials: 'include',
       }),
+      transformResponse: (response: { data: EnrolledCourse | null }) =>
+        response.data,
       async onQueryStarted(args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;

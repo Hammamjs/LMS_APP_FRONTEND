@@ -1,4 +1,3 @@
-import React from 'react';
 import { AudienceInfo } from './audience-info';
 
 type AudienceListProps = {

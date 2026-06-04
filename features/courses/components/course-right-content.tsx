@@ -1,52 +1,19 @@
 import Image from 'next/image';
 import { type Course } from '../types/course.types';
 import { Badge, Button, Card, CardContent } from '@/shared/ui';
-import { useRouter } from 'next/navigation';
 import { Award, BarChart3, Globe, PlayCircle } from 'lucide-react';
-import { calcDiscount } from '../lib/calc-price';
-import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '@/features/auth/store/sign-in.store';
-import { useUserEnrolled } from '../hooks/use.is-course-enrolled';
-import { useEffect } from 'react';
-import { selectIsEnrolled } from '../store/enrollment.store';
+import { useCourseRightContent } from '../hooks/use.course-right-content';
 
 export const CourseRightContent = ({ course }: { course: Course }) => {
-  const router = useRouter();
-  const user = useSelector(selectCurrentUser);
-
-  const { isCheckingUserEnrollment } = useUserEnrolled(
-    course.id,
-    user?.id ?? '',
-  );
-
-  const isEnrolled = useSelector(selectIsEnrolled);
-
-  const hasDiscount =
-    course.discountPrice > 0 && course.discountPrice < course.originalPrice;
-  const finalPrice = hasDiscount ? course.discountPrice : course.originalPrice;
-
-  const formattedPrice =
-    finalPrice === 0 ? 'Free' : `$${finalPrice.toFixed(2)}`;
-  const isPriceFree = finalPrice === 0;
-
-  const discountPercentage = hasDiscount
-    ? Math.round(
-        ((course.originalPrice - course.discountPrice) / course.originalPrice) *
-          100,
-      )
-    : 0;
-
-  const handleEnroll = () => {
-    if (isPriceFree) {
-      router.push(`/courses/${course.id}/watch`);
-    } else {
-      router.push(`/checkout?courseId=${course.id}`);
-    }
-  };
-
-  const handleStartLearning = () => {
-    router.push(`/courses/${course.id}/watch`);
-  };
+  const {
+    discountPercentage,
+    formattedPrice,
+    handleEnroll,
+    handleStartLearning,
+    isPriceFree,
+    isEnrolled,
+    router,
+  } = useCourseRightContent({ course });
 
   return (
     <Card className="sticky top-24 overflow-hidden border-border/50 shadow-lg">
@@ -79,7 +46,7 @@ export const CourseRightContent = ({ course }: { course: Course }) => {
                 ${course.originalPrice.toFixed(2)}
               </span>
               <Badge variant="secondary" className="ml-2">
-                {course.discountPrice}% off
+                {discountPercentage}% off
               </Badge>
             </>
           )}

@@ -4,6 +4,7 @@ import { Star, Users, Clock, BarChart3 } from 'lucide-react';
 import { Card, CardContent, Badge } from '@/shared/ui';
 import { Course } from '../types/course.types';
 import { convertTime } from '@/features/lessons/lib/convert-time.helper';
+import { calcDiscount } from '../lib';
 
 interface CourseCardProps {
   course: Course;
@@ -16,16 +17,13 @@ const levelColors = {
 };
 
 export function CourseCard({ course }: CourseCardProps) {
-  // 💡 Safely verify if a valid markdown markdown reduction is active
   const hasDiscount =
-    !!course.discountPrice &&
-    course.discountPrice > 0 &&
-    course.discountPrice < course.originalPrice;
+    course.discountPrice > 0 && course.discountPrice < course.originalPrice;
 
   const isFree =
     course.originalPrice === 0 || course.originalPrice === course.discountPrice;
 
-  const formattedPrice = isFree
+  const displayPrice = isFree
     ? 'Free'
     : hasDiscount
       ? `$${course.discountPrice.toFixed(2)}`
@@ -52,6 +50,7 @@ export function CourseCard({ course }: CourseCardProps) {
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            priority
           />
 
           {isFree && (
@@ -62,12 +61,7 @@ export function CourseCard({ course }: CourseCardProps) {
 
           {!isFree && hasDiscount && (
             <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground border-0">
-              {Math.round(
-                ((course.originalPrice - course.discountPrice) /
-                  course.originalPrice) *
-                  100,
-              )}
-              % Off
+              {calcDiscount(course.originalPrice, course.discountPrice)}% Off
             </Badge>
           )}
         </div>
@@ -127,7 +121,7 @@ export function CourseCard({ course }: CourseCardProps) {
           {/* Price Layout section */}
           <div className="flex items-center gap-2">
             <span className="text-lg font-bold text-foreground">
-              {formattedPrice}
+              {displayPrice}
             </span>
             {!isFree && hasDiscount && (
               <span className="text-sm text-muted-foreground line-through">

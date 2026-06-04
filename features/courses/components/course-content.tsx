@@ -151,7 +151,7 @@ export const CourseContent = ({ course }: { course: Course }) => {
             </TabsContent>
           </Tabs>
           <div className="mt-10">
-            <ReviewsSection />
+            <ReviewsSection courseId={course.id} />
           </div>
         </div>
       </div>
