@@ -1,6 +1,6 @@
 'use client';
 import { Play, Lock, CheckCircle } from 'lucide-react';
-import { Lesson } from '@/features/lessons';
+import { Lesson } from '@/features/lessons/types';
 import { cn } from '@/shared/lib/utils';
 import { useSelector } from 'react-redux';
 import { selectIsEnrolled } from '../../courses/store/enrollment.store';
@@ -86,7 +86,7 @@ export function LessonList({
               </div>
 
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{lesson.duration || '0'} min</span>
+                <span>{lesson.duration} min</span>
               </div>
             </div>
           </button>
