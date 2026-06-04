@@ -36,19 +36,6 @@ export const Category = ({ category, Icon, gradientClass }: categoryProps) => {
               {categoryDescriptions[category]}
             </p>
 
-            {/* Top Course Preview */}
-            {/* {topCourse && (
-                        <div className="mt-4 rounded-lg bg-muted/50 p-3">
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-                            <BookOpen className="h-3 w-3" />
-                            <span>Top Rated</span>
-                          </div>
-                          <p className="text-sm font-medium text-foreground line-clamp-1">
-                            {topCourse.title}
-                          </p>
-                        </div>
-                      )} */}
-
             {/* Explore Link */}
             <div className="mt-4 flex items-center text-sm font-medium text-primary">
               Explore courses
