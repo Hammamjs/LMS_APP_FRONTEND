@@ -1,3 +1,5 @@
+import { Meta } from '@/shared/types';
+
 export interface Lesson {
   id: string;
   title: string;
@@ -21,15 +23,6 @@ export interface LessonRequest {
   isFree: boolean;
   courseId: string;
 }
-
-type Meta = {
-  page: number;
-  total: number;
-  limit: number;
-  lastPage: number;
-  hasNext: boolean;
-  hasPrev: boolean;
-};
 
 export type LessonResponse = {
   data: Lesson[];
