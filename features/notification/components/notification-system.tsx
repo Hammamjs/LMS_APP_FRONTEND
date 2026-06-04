@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../../../shared/ui';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { cn } from '../../../shared/lib';
 import {
   useDeleteNotificationMutation,
@@ -31,18 +31,14 @@ export const NotificationSystem = () => {
     },
   );
 
-  useEffect(() => {
-    console.log(notification);
-  }, [isLoading]);
-
   const [markAsRead] = useMarkAsReadMutation();
   const [deleteNotification] = useDeleteNotificationMutation();
 
   if (isLoading) return <>Loading ...</>;
 
-  if (!notification) return;
+  if (!notification?.data) return;
 
-  const unreadCount = notification.data.filter((n) => !n.read).length;
+  const unreadCount = notification?.data.filter((n) => !n.read).length;
 
   return (
     <>
@@ -103,7 +99,7 @@ export const NotificationSystem = () => {
                       size="sm"
                       variant="outline"
                       className="h-7 text-xs"
-                      onClick={() => markAsRead(notification.id)}
+                      onClick={() => markAsRead({ id: notification.id })}
                     >
                       <Check className="mr-1 h-3 w-3" />
                       Read
@@ -114,7 +110,7 @@ export const NotificationSystem = () => {
                     size="sm"
                     variant="destructive"
                     className="h-7 text-xs"
-                    onClick={() => deleteNotification(notification.id)}
+                    onClick={() => deleteNotification({ id: notification.id })}
                   >
                     <Trash2 className="mr-1 h-3 w-3" />
                     Delete
