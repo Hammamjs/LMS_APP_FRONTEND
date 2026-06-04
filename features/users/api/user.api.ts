@@ -1,4 +1,4 @@
-import { userKey } from '@/features/auth';
+import { userKey } from '@/features/auth/constants';
 import { baseApi } from '@/shared/api/create-base.api';
 import { UserParams, UserResponse } from '../types/types';
 

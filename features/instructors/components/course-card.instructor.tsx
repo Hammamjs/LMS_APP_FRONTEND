@@ -13,12 +13,39 @@ import {
 import { Eye, MoreVertical, Pencil, Star, Trash, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useDeleteCourseMutationAction } from '@/features/courses/hooks/use.delete-course.mutation.action';
+import { useToast } from '@/shared/hooks';
+import { useEffect } from 'react';
 
 type CourseCardInstructorProps = { course: Course };
 
 const CourseCardInstructor = ({ course }: CourseCardInstructorProps) => {
   const trimOverflow = (title: string, count: number = 30) =>
     title.length > count ? `${title.substring(0, count)}...` : title;
+
+  // delete course
+  const {
+    deleteCourse,
+    isLoading: isDeletingCourse,
+    isError,
+    error,
+  } = useDeleteCourseMutationAction();
+
+  const { toast } = useToast();
+
+  const handleDeleteCourse = async (id: string) => {
+    try {
+      await deleteCourse(id);
+      toast({ title: 'Course deleted successfully' });
+    } catch (err) {
+      console.log(err);
+      toast({ title: 'Deleting course failed please try again' });
+    }
+  };
+
+  useEffect(() => {
+    if (isError) console.log(error);
+  }, [isError, error]);
 
   return (
     <Card className="overflow-hidden p-0">
@@ -67,7 +94,11 @@ const CourseCardInstructor = ({ course }: CourseCardInstructorProps) => {
                   Edit Lessons
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive">
+              <DropdownMenuItem
+                className="text-destructive"
+                onClick={() => handleDeleteCourse(course.id)}
+                disabled={isDeletingCourse}
+              >
                 <Trash className="h-4 w-4" />
                 Delete
               </DropdownMenuItem>
