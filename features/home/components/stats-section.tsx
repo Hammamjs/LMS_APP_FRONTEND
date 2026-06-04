@@ -1,22 +1,21 @@
 import { BookOpen, Users, Award, Globe } from 'lucide-react';
-import { platformStats } from '@/features/courses';
 
 const stats = [
   {
     icon: BookOpen,
-    value: platformStats.totalCourses.toLocaleString(),
+    value: '20',
     label: 'Courses',
     description: 'Expert-created content',
   },
   {
     icon: Users,
-    value: `${(platformStats.totalStudents / 1000000).toFixed(1)}M+`,
+    value: `${1}M+`,
     label: 'Learners',
     description: 'Worldwide community',
   },
   {
     icon: Award,
-    value: `${(platformStats.coursesCompleted / 1000000).toFixed(0)}M+`,
+    value: `1M+`,
     label: 'Completions',
     description: 'Courses finished',
   },

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/shared/ui';
-import { CourseCard } from '@/features/courses';
+import { CourseCard } from '@/features/courses/components';
 import useCourseResult from '@/features/courses/hooks/use.get.courses';
 
 export function CourseGrid() {
