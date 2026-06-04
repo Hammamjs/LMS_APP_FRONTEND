@@ -1,131 +1,51 @@
 'use client';
 
-import { useMemo, useState, use } from 'react';
 import Link from 'next/link';
-import { notFound, useParams } from 'next/navigation';
-import {
-  Code,
-  ArrowLeft,
-  Search,
-  SlidersHorizontal,
-  LayoutGrid,
-  List,
-} from 'lucide-react';
+import { notFound } from 'next/navigation';
+import { ArrowLeft, Search, SlidersHorizontal } from 'lucide-react';
 import {
   Input,
-  Badge,
-  Button,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/shared/ui';
-import { CourseCard } from '@/features/courses';
-import {
-  categoryDescriptions,
-  categoryIcons,
-  sortOptions,
-} from '../config/category.config';
-import { useCourseCategoriesQuery } from '@/features/courses/api/courses.api';
-import { calcDiscount } from '@/features/courses/lib/calc-price';
-import useCourseResult from '@/features/courses/hooks/use.get.courses';
+import { categoryDescriptions, sortOptions } from '../config/category.config';
+
 import { CategoryCoursesBySlugSkeleton } from './category-by-slug.skeletion';
+import { useCategoryBySlug } from '../hooks/use.category-by-slug';
+import { CourseView } from './course.list';
+import { ActiveCategoryFilters } from './active-category-filters';
+import { PriceFilters } from './price-filters';
+import { BrowseOtherCategories } from './browse-other-cat';
+import { ViewModeToggle } from './view-mode-toggle';
 
-export function CategoryCoursesBySlugComponent() {
-  const { slug } = useParams();
+type Props = {
+  slug: string;
+};
 
-  const convertSlug = ((slug as string) ?? '')
-    .split('-')
-    .map((w) => w.at(0)?.toUpperCase() + w.slice(1))
-    .join(' ');
-
-  const { data: categories, isLoading } = useCourseCategoriesQuery();
-  const { courses, isLoading: isCourseLoading } = useCourseResult({
-    page: 1,
-    category: convertSlug,
-  });
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState('popular');
-  const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
-  const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
-  const Icon = categoryIcons[slug as string] || Code;
-
-  const filteredCourses = useMemo(() => {
-    let result = courses ?? [];
-
-    // Search filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (course) =>
-          course.title.toLowerCase().includes(query) ||
-          course.description.toLowerCase().includes(query) ||
-          course.instructor.username.toLowerCase().includes(query),
-      );
-    }
-
-    // Level filter
-    if (selectedLevel) {
-      result = result.filter((course) => course.level === selectedLevel);
-    }
-
-    // Price filter
-    if (selectedPrice) {
-      if (selectedPrice === 'free') {
-        result = result.filter((course) => {
-          const finalPrice = calcDiscount(
-            course.originalPrice,
-            course.discountPrice,
-          );
-
-          return finalPrice === 0;
-        });
-      } else if (selectedPrice === 'paid') {
-        result = result.filter((course) => {
-          const finalPrice = calcDiscount(
-            course.originalPrice,
-            course.discountPrice,
-          );
-
-          return finalPrice > 0;
-        });
-      }
-    }
-
-    // Sort
-    switch (sortBy) {
-      case 'rating':
-        result.sort((a, b) => b.rating - a.rating);
-        break;
-      case 'newest':
-        result.sort((a, b) =>
-          b.updatedAt.toISOString().localeCompare(a.updatedAt.toISOString()),
-        );
-        break;
-      case 'price-low':
-        result.sort((a, b) => a.originalPrice - b.originalPrice);
-        break;
-      case 'price-high':
-        result.sort((a, b) => b.originalPrice - a.originalPrice);
-        break;
-      default: // popular
-      // result.sort((a, b) => b.enrolledCount - a.enrolledCount);
-    }
-
-    return result;
-  }, [
-    convertSlug,
+export function CategoryCoursesBySlugComponent({ slug }: Props) {
+  const {
+    Icon,
+    categories,
+    filteredCourses,
+    isCourseLoading,
+    isLoading,
     searchQuery,
     selectedLevel,
     selectedPrice,
+    setSearchQuery,
+    setSelectedLevel,
+    setSelectedPrice,
+    setSortBy,
+    setViewMode,
     sortBy,
-    isCourseLoading,
+    viewMode,
     courses,
-  ]);
+    convertSlug,
+    clearFilters,
+  } = useCategoryBySlug({ slug });
 
   if (isLoading || isCourseLoading) return <CategoryCoursesBySlugSkeleton />;
 
@@ -133,7 +53,7 @@ export function CategoryCoursesBySlugComponent() {
     notFound();
   }
 
-  if (!categories?.length) return;
+  if (!categories?.data.length) return;
 
   return (
     <div className="min-h-screen">
@@ -172,12 +92,6 @@ export function CategoryCoursesBySlugComponent() {
                 </div>
                 <div className="text-sm text-muted-foreground">Courses</div>
               </div>
-              <div className="text-center">
-                {/* <div className="text-2xl font-bold text-foreground">
-                  {freeCourses(allCourses, convertSlug)}
-                </div> */}
-                <div className="text-sm text-muted-foreground">Free</div>
-              </div>
             </div>
           </div>
         </div>
@@ -204,7 +118,9 @@ export function CategoryCoursesBySlugComponent() {
               {/* Level Filter */}
               <Select
                 value={selectedLevel || 'all'}
-                onValueChange={(v) => setSelectedLevel(v === 'all' ? null : v)}
+                onValueChange={(v) =>
+                  setSelectedLevel(v === 'all' ? undefined : v)
+                }
               >
                 <SelectTrigger className="w-36">
                   <SelectValue placeholder="Level" />
@@ -218,19 +134,10 @@ export function CategoryCoursesBySlugComponent() {
               </Select>
 
               {/* Price Filter */}
-              <Select
-                value={selectedPrice || 'all'}
-                onValueChange={(v) => setSelectedPrice(v === 'all' ? null : v)}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Price" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Prices</SelectItem>
-                  <SelectItem value="free">Free</SelectItem>
-                  <SelectItem value="paid">Paid</SelectItem>
-                </SelectContent>
-              </Select>
+              <PriceFilters
+                selectedPrice={selectedPrice}
+                setSelectedPrice={setSelectedPrice}
+              />
 
               {/* Sort */}
               <Select value={sortBy} onValueChange={setSortBy}>
@@ -248,145 +155,33 @@ export function CategoryCoursesBySlugComponent() {
               </Select>
 
               {/* View Mode Toggle */}
-              <div className="hidden sm:flex items-center gap-1 rounded-md border border-border p-1">
-                <Button
-                  variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => setViewMode('grid')}
-                >
-                  <LayoutGrid className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => setViewMode('list')}
-                >
-                  <List className="h-4 w-4" />
-                </Button>
-              </div>
+              <ViewModeToggle setViewMode={setViewMode} viewMode={viewMode} />
             </div>
           </div>
 
           {/* Active Filters */}
-          {(selectedLevel || selectedPrice || searchQuery) && (
-            <div className="mb-6 flex flex-wrap items-center gap-2">
-              <span className="text-sm text-muted-foreground">
-                Active filters:
-              </span>
-              {searchQuery && (
-                <Badge variant="secondary" className="gap-1">
-                  Search: {searchQuery}
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="ml-1 hover:text-destructive"
-                  >
-                    &times;
-                  </button>
-                </Badge>
-              )}
-              {selectedLevel && (
-                <Badge variant="secondary" className="gap-1 capitalize">
-                  {selectedLevel}
-                  <button
-                    onClick={() => setSelectedLevel(null)}
-                    className="ml-1 hover:text-destructive"
-                  >
-                    &times;
-                  </button>
-                </Badge>
-              )}
-              {selectedPrice && (
-                <Badge variant="secondary" className="gap-1 capitalize">
-                  {selectedPrice}
-                  <button
-                    onClick={() => setSelectedPrice(null)}
-                    className="ml-1 hover:text-destructive"
-                  >
-                    &times;
-                  </button>
-                </Badge>
-              )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedLevel(null);
-                  setSelectedPrice(null);
-                }}
-                className="text-muted-foreground hover:text-destructive"
-              >
-                Clear all
-              </Button>
-            </div>
-          )}
-
-          {/* Results Count */}
-          {/* <p className="mb-6 text-sm text-muted-foreground">
-            Showing {filteredCourses.length} of{' '}
-            {totalCourses(allCourses, convertSlug)} courses in {convertSlug}
-          </p> */}
+          <ActiveCategoryFilters
+            onClear={clearFilters}
+            searchQuery={searchQuery}
+            selectedLevel={selectedLevel}
+            selectedPrice={selectedPrice}
+            setSearchQuery={setSearchQuery}
+            setSelectedLevel={setSelectedLevel}
+            setSelectedPrice={setSelectedPrice}
+          />
 
           {/* Course Grid/List */}
-          {filteredCourses.length > 0 ? (
-            <div
-              className={
-                viewMode === 'grid'
-                  ? 'grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                  : 'flex flex-col gap-4'
-              }
-            >
-              {filteredCourses.map((course) => (
-                <CourseCard key={course.id} course={course} />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border py-16">
-              <div className="mb-4 rounded-full bg-muted p-4">
-                <Search className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="mb-2 text-lg font-semibold">No courses found</h3>
-              <p className="mb-4 text-center text-muted-foreground">
-                Try adjusting your search or filter criteria
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedLevel(null);
-                  setSelectedPrice(null);
-                }}
-              >
-                Clear all filters
-              </Button>
-            </div>
-          )}
+          <CourseView
+            filteredCourses={filteredCourses}
+            onClear={clearFilters}
+            viewMode={viewMode}
+          />
 
           {/* Browse Other Categories */}
-          <div className="mt-12 border-t border-border/50 pt-8">
-            <h2 className="mb-4 text-lg font-semibold text-foreground">
-              Explore Other Categories
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {categories
-                .filter((cat) => cat !== convertSlug)
-                .map((cat) => (
-                  <Link
-                    key={cat}
-                    href={`/categories/${encodeURIComponent(cat.toLowerCase().replace(/\s+/g, '-'))}`}
-                  >
-                    <Badge
-                      variant="outline"
-                      className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
-                    >
-                      {cat}
-                    </Badge>
-                  </Link>
-                ))}
-            </div>
-          </div>
+          <BrowseOtherCategories
+            categories={categories.data ?? []}
+            slug={convertSlug}
+          />
         </div>
       </section>
     </div>
