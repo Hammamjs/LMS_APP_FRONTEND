@@ -2,49 +2,40 @@
 
 import { useState } from 'react';
 
-import { Star, ThumbsUp, MessageSquare, X } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 
-import {
-  Button,
-  Textarea,
-  Avatar,
-  AvatarFallback,
-  Badge,
-  Progress,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '../../../shared/ui';
+import { Button, Badge, Progress, Card, CardContent } from '../../../shared/ui';
 
-import { Review } from '../../../shared/types';
 import { useSelector } from 'react-redux';
 import { selectIsEnrolled } from '@/features/courses/store/enrollment.store';
-import { Stars } from './Stars';
 import { ReviewModal } from './review.modal';
+import { useGetReviews } from '../hooks/use.get-review';
+import { ReviewsList } from './reviews.list';
+import { useReviewForm } from '../hooks/use.review-form';
+import { useRemoveReviewAction } from '../hooks/use.remove-review.action';
 
-const defaultReviews: Review[] = [
-  {
-    id: 'r1',
-    name: 'Sarah Mitchell',
-    initials: 'SM',
-    rating: 5,
-    date: '2 days ago',
-    comment:
-      'Incredibly clear explanations. The pacing is perfect and the examples are real-world useful.',
-    helpful: 24,
-  },
-  {
-    id: 'r2',
-    name: 'James Carter',
-    initials: 'JC',
-    rating: 4,
-    date: '1 week ago',
-    comment:
-      'Great content overall. Would love more downloadable resources alongside the videos.',
-    helpful: 12,
-  },
-];
+// const defaultReviews: Review[] = [
+//   {
+//     id: 'r1',
+//     name: 'Sarah Mitchell',
+//     initials: 'SM',
+//     rating: 5,
+//     date: '2 days ago',
+//     comment:
+//       'Incredibly clear explanations. The pacing is perfect and the examples are real-world useful.',
+//     helpful: 24,
+//   },
+//   {
+//     id: 'r2',
+//     name: 'James Carter',
+//     initials: 'JC',
+//     rating: 4,
+//     date: '1 week ago',
+//     comment:
+//       'Great content overall. Would love more downloadable resources alongside the videos.',
+//     helpful: 12,
+//   },
+// ];
 
 const distribution = [
   { stars: 5, pct: 72 },
@@ -54,20 +45,18 @@ const distribution = [
   { stars: 1, pct: 1 },
 ];
 
-export function ReviewsSection({
-  title = 'Reviews',
-  average = 4.8,
-  total = 1284,
-  reviews = defaultReviews,
-}: {
-  title?: string;
-  average?: number;
-  total?: number;
-  reviews?: Review[];
-}) {
+type Props = {
+  courseId: string;
+};
+
+export function ReviewsSection({ courseId }: Props) {
   const [showModal, setShowModal] = useState(false);
 
+  const [mode, setMode] = useState<'create' | 'edit'>('create');
+
   const isEnrolled = useSelector(selectIsEnrolled);
+
+  const { reviews, isLoading } = useGetReviews({ courseId });
 
   return (
     <>
@@ -78,9 +67,11 @@ export function ReviewsSection({
             <div className="flex items-center gap-2">
               <MessageSquare className="h-5 w-5 text-primary" />
 
-              <h3 className="text-lg font-semibold">{title}</h3>
+              {/* <h3 className="text-lg font-semibold">{title}</h3> */}
 
-              <Badge variant="secondary">{total.toLocaleString()}</Badge>
+              <Badge variant="secondary">
+                {reviews?.data.length.toLocaleString()}
+              </Badge>
             </div>
 
             {isEnrolled && (
@@ -93,12 +84,12 @@ export function ReviewsSection({
           {/* Rating Overview */}
           <div className="grid gap-6 rounded-lg border bg-muted/30 p-5 sm:grid-cols-[auto_1fr]">
             <div className="flex flex-col items-center justify-center gap-1 sm:border-r sm.pr-6">
-              <span className="text-4xl font-bold">{average.toFixed(1)}</span>
+              {/* <span className="text-4xl font-bold">{average.toFixed(1)}</span> */}
 
-              <Stars value={Math.round(average)} />
+              {/* <Stars value={Math.round(average)} /> */}
 
               <span className="text-xs text-muted-foreground">
-                {total.toLocaleString()} ratings
+                {reviews?.data.length.toLocaleString()} ratings
               </span>
             </div>
 
@@ -119,51 +110,25 @@ export function ReviewsSection({
 
           {/* Reviews */}
           <ul className="space-y-4">
-            {reviews.map((r) => (
-              <li
-                key={r.id}
-                className="flex gap-3 border-t pt-4 first:border-t-0 first:pt-0"
-              >
-                <Avatar className="h-9 w-9">
-                  <AvatarFallback className="bg-primary/10 text-xs text-primary">
-                    {r.initials}
-                  </AvatarFallback>
-                </Avatar>
-
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{r.name}</span>
-
-                      <Stars value={r.rating} />
-                    </div>
-
-                    <span className="text-xs text-muted-foreground">
-                      {r.date}
-                    </span>
-                  </div>
-
-                  <p className="text-sm text-muted-foreground">{r.comment}</p>
-
-                  <div className="flex items-center gap-3 pt-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 px-2 text-xs"
-                    >
-                      <ThumbsUp className="h-3.5 w-3.5" />
-                      Helpful · {r.helpful}
-                    </Button>
-                  </div>
-                </div>
-              </li>
-            ))}
+            <ReviewsList
+              reviews={reviews?.data ?? []}
+              onEdit={() => {
+                setMode('edit');
+                setShowModal(true);
+              }}
+            />
           </ul>
         </CardContent>
       </Card>
 
       {/* REVIEW MODAL */}
-      {showModal && <ReviewModal close={() => setShowModal(false)} />}
+      {showModal && (
+        <ReviewModal
+          close={() => setShowModal(false)}
+          courseId={courseId}
+          mode={mode}
+        />
+      )}
     </>
   );
 }

@@ -6,26 +6,26 @@ import {
   CardTitle,
   Textarea,
 } from '@/shared/ui';
-import { X } from 'lucide-react';
-import { useState } from 'react';
+import { Loader2, X } from 'lucide-react';
 import { Stars } from './Stars';
+import { useReviewForm } from '../hooks/use.review-form';
 
 type ReviewModalProps = {
   close: () => void;
+  courseId: string;
+  mode: 'create' | 'edit';
 };
 
-export function ReviewModal({ close }: ReviewModalProps) {
-  const [rating, setRating] = useState(5);
-  const [comment, setComment] = useState('');
-
-  const handleSubmit = () => {
-    console.log({
-      rating,
-      comment,
-    });
-
-    close();
-  };
+export function ReviewModal({ close, courseId, mode }: ReviewModalProps) {
+  const {
+    handleSubmit,
+    isLoading,
+    onSubmit,
+    register,
+    setValue,
+    watch,
+    isEdit,
+  } = useReviewForm({ close, courseId, mode });
 
   return (
     <div
@@ -46,7 +46,11 @@ export function ReviewModal({ close }: ReviewModalProps) {
           <div className="space-y-3">
             <p className="text-sm font-medium">Your Rating</p>
 
-            <Stars value={rating} onChange={setRating} interactive />
+            <Stars
+              value={watch('rating')}
+              onChange={(n) => setValue('rating', n)}
+              interactive
+            />
           </div>
 
           {/* Comment */}
@@ -56,18 +60,25 @@ export function ReviewModal({ close }: ReviewModalProps) {
             <Textarea
               rows={5}
               placeholder="Tell others what you liked or disliked about this course..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              {...register('content')}
             />
           </div>
 
           {/* Actions */}
           <div className="flex justify-end gap-2">
-            <Button variant="ghost" onClick={close}>
+            <Button variant="ghost" onClick={close} disabled={isLoading}>
               Cancel
             </Button>
 
-            <Button onClick={handleSubmit}>Submit Review</Button>
+            <Button onClick={handleSubmit(onSubmit)} disabled={isLoading}>
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin">
+                  Update review
+                </Loader2>
+              ) : (
+                'Submit Review'
+              )}
+            </Button>
           </div>
         </CardContent>
       </Card>
