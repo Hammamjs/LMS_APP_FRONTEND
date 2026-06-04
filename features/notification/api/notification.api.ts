@@ -1,22 +1,35 @@
 import { baseApi } from '@/shared/api/create-base.api';
-import { Notification } from '../types/notification.types';
+import {
+  Notification,
+  NotificationResponse,
+} from '../types/notification.types';
+import { notificationKey } from '../constants';
 
 export const NotificationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-    getNotifications: builder.query<{ data: Notification[] }, void>({
+    getNotifications: builder.query<NotificationResponse, void>({
       query: () => ({
         url: '/notifications',
         credentials: 'include',
       }),
+      providesTags: (result) => {
+        console.log(result);
+        return result
+          ? [
+              ...result.data.map((n) => notificationKey.details(n.id)),
+              notificationKey.list(),
+            ]
+          : [notificationKey.list()];
+      },
     }),
-    markAsRead: builder.mutation<void, string>({
-      query: (id) => ({
+    markAsRead: builder.mutation<void, { id: string }>({
+      query: ({ id }) => ({
         url: '/notifications/update',
         method: 'PATCH',
         credentials: 'include',
         body: { id },
       }),
-      onQueryStarted: async (id, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
         const patchResult = dispatch(
           NotificationApi.util.updateQueryData(
             'getNotifications',
@@ -36,15 +49,20 @@ export const NotificationApi = baseApi.injectEndpoints({
           patchResult.undo();
         }
       },
+
+      invalidatesTags: (_result, _error, { id }) => [
+        notificationKey.details(id),
+        notificationKey.list(),
+      ],
     }),
 
-    deleteNotification: builder.mutation<void, string>({
-      query: (id) => ({
+    deleteNotification: builder.mutation<void, { id: string }>({
+      query: ({ id }) => ({
         url: `/notifications/delete?id=${id}`,
         method: 'DELETE',
         credentials: 'include',
       }),
-      onQueryStarted: async (id, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async ({ id }, { dispatch, queryFulfilled }) => {
         const patchResult = dispatch(
           NotificationApi.util.updateQueryData(
             'getNotifications',
@@ -63,6 +81,10 @@ export const NotificationApi = baseApi.injectEndpoints({
           patchResult.undo();
         }
       },
+      invalidatesTags: (_result, _error, { id }) => [
+        notificationKey.details(id),
+        notificationKey.list(),
+      ],
     }),
   }),
 });
