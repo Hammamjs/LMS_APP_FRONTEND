@@ -1,70 +1,33 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+
 import { Menu, X, Search, Moon, Sun, GraduationCap } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import { Button, Input } from '@/shared/ui';
-import { useSelector } from 'react-redux';
 
 import { cn } from '@/shared/lib/utils';
-import {
-  selectCurrentToken,
-  selectCurrentUser,
-} from '@/features/auth/store/sign-in.store';
-import { NotificationSystem } from '../../features/notification/components/notification-system';
+
 import { UserMenu } from './user-menu';
 import { NotificationListener } from '../../features/notification/components/notification-listener';
-import { useLogOutMutationAction } from '@/features/auth/hooks';
-import { useToast } from '../hooks';
-
-const navLinks = (id: string) => [
-  { href: '/courses', label: 'Courses' },
-  { href: '/dashboard', label: 'My Learning' },
-  { href: '/categories', label: 'Categories' },
-  { href: '/checkout/user-history', label: 'My Payments' },
-  { href: '/instructor/add-course', label: 'Add new course' },
-  { href: '/lessons/add', label: 'Add Lesson' },
-  { href: `/instructor/${id}/me`, label: 'My Courses' },
-];
+import { NotificationSystem } from '../../features/notification/components/notification-system';
+import { useNavbar } from '../hooks/use.navbar';
+import { NavbarActions } from './navbar-actions';
 
 export function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
-
-  const { logout } = useLogOutMutationAction();
-
-  const { toast } = useToast();
-
-  const handleLogout = async () => {
-    try {
-      const res = await logout();
-      toast({ title: 'You logged out' });
-      // force browser to refresh
-      window.location.reload();
-    } catch (err) {
-      toast({
-        title: err instanceof Error ? err.message : 'Logged you out failed',
-      });
-    }
-  };
-
-  const user = useSelector(selectCurrentUser);
-  const token = useSelector(selectCurrentToken);
-
-  const links = navLinks(user?.id ?? '');
-
-  const handleSearch = (e?: React.SyntheticEvent<HTMLFormElement>) => {
-    e?.preventDefault();
-
-    if (searchQuery.trim()) {
-      window.location.href = `/courses?q=${encodeURIComponent(searchQuery)}`;
-    }
-  };
+  const {
+    handleLogout,
+    handleSearch,
+    isMenuOpen,
+    links,
+    pathname,
+    setIsMenuOpen,
+    setSearchQuery,
+    theme,
+    token,
+    setTheme,
+    user,
+    searchQuery,
+  } = useNavbar();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
@@ -191,37 +154,11 @@ export function Navbar() {
 
                 {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
               </Button>
-
-              {!user ? (
-                <>
-                  <Button variant="outline" asChild>
-                    <Link href="/sign-in" onClick={() => setIsMenuOpen(false)}>
-                      Sign In
-                    </Link>
-                  </Button>
-
-                  <Button asChild>
-                    <Link href="/sign-up" onClick={() => setIsMenuOpen(false)}>
-                      Join for Free
-                    </Link>
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button variant="outline" asChild>
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Dashboard
-                    </Link>
-                  </Button>
-
-                  <Button variant="destructive" onClick={handleLogout}>
-                    Logout
-                  </Button>
-                </>
-              )}
+              <NavbarActions
+                user={user}
+                handleLogout={handleLogout}
+                setIsMenuOpen={setIsMenuOpen}
+              />
             </div>
           </div>
         </div>
