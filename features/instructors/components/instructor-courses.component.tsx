@@ -23,6 +23,7 @@ export function InstructorCoursesComponent() {
   // we need to get instructor courses
   const { instructorId } = useParams<{ instructorId: string }>();
   const [search, setSearch] = useState<string>('');
+  // usedebounce to reduce api calls when user typing
   const searchDebounce = useDebounce(search, 300);
 
   const { courses, isLoading, isFetching } = useCourseResult({
