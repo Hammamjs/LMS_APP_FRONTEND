@@ -21,9 +21,8 @@ import { useVerifyEmail } from '../hooks/use.verify-email.hook';
 import { getObjectFromSessionStorage } from '@/shared/lib/session-storage.helper';
 
 export function VerifyEmailComponent() {
-  const email = getObjectFromSessionStorage('verifyEmail');
   const [code, setCode] = useState('');
-
+  const [email, setEmail] = useState('');
   const [secondsLeft, setSecondsLeft] = useState(45);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -34,6 +33,11 @@ export function VerifyEmailComponent() {
     isError,
     isSuccess,
   } = useVerifyEmail();
+
+  useEffect(() => {
+    const storedEmail = getObjectFromSessionStorage('verifyEmail');
+    if (storedEmail) setEmail(storedEmail);
+  }, []);
 
   useEffect(() => {
     timerRef.current = setInterval(() => {
