@@ -1,5 +1,5 @@
-import { Watch } from '@/features/lessons/components';
+import { WatchComponent } from '@/features/lessons/components';
 
 export default function WatchPage() {
-  return <Watch />;
+  return <WatchComponent />;
 }
