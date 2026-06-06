@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CourseFilters, ActiveFilters } from './course-filters';
 import useFilteredCategories from '../hooks/use.filtered-category';
 import useUi from '../hooks/use.ui';
