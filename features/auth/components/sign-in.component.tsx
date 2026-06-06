@@ -1,10 +1,10 @@
 import { Suspense } from 'react';
-import { SignInComponent } from '@/features/auth/components';
+import { SignInContent } from './sign-in.content';
 
 export function SignInComponent() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <SignInComponent />
+      <SignInContent />
     </Suspense>
   );
 }
