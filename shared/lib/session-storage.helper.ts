@@ -1,10 +1,15 @@
-export const getSessionStorage = (key: string) => sessionStorage.getItem(key);
+const isBrowser = typeof window !== 'undefined';
 
-export const setSessionStorage = (key: string, value: unknown) =>
-  sessionStorage.setItem(key, JSON.stringify(value));
+export const getSessionStorage = (key: string) =>
+  isBrowser ? sessionStorage.getItem(key) : null;
 
-export const removeFromSessionStorage = (key: string) =>
-  sessionStorage.removeItem(key);
+export const setSessionStorage = (key: string, value: unknown) => {
+  if (isBrowser) sessionStorage.setItem(key, JSON.stringify(value));
+};
+
+export const removeFromSessionStorage = (key: string) => {
+  if (isBrowser) sessionStorage.removeItem(key);
+};
 
 export const getObjectFromSessionStorage = (key: string) => {
   const value = getSessionStorage(key);
