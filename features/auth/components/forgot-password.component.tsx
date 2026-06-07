@@ -15,9 +15,10 @@ import {
 } from '@/shared/ui';
 import { useForm } from 'react-hook-form';
 import { TForgotPasswordSchema } from '../schema/forgot-password.schema';
-import { useForgotPassword } from '../hooks/use.forgot-password';
+import { useForgotPasswordAction } from '../hooks/use.forgot-password';
 import { useToast } from '@/shared/hooks';
 import { setSessionStorage } from '@/shared/lib/session-storage.helper';
+import { useEffect } from 'react';
 
 export function ForgotPasswordComponent() {
   const router = useRouter();
@@ -32,17 +33,15 @@ export function ForgotPasswordComponent() {
     },
   });
 
-  const [forgotPassword, { isLoading }] = useForgotPassword();
+  const { sendResetCode, isLoading } = useForgotPasswordAction();
 
   const { toast } = useToast();
 
   const onSubmit = async (data: TForgotPasswordSchema) => {
-    // Simulate API call to send verification code
     try {
-      const response = await forgotPassword({ email: data.email }).unwrap();
+      const response = await sendResetCode(data.email);
       toast({ title: response.message });
 
-      // Store email in sessionStorage for the next steps (demo purposes)
       setSessionStorage('resetEmail', data.email);
 
       router.push('/verify-code');
