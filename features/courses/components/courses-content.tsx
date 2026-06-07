@@ -97,7 +97,7 @@ export function CoursesContent() {
       </div>
 
       {/* Main Content */}
-      <div className="flex gap-8">
+      <div className="flex gap-8 flex-col lg:flex-row">
         {/* Filters Sidebar */}
         <CourseFilters
           selectedCategory={selectedCategory}

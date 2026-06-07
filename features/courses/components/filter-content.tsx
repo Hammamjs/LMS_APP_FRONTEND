@@ -10,7 +10,6 @@ import { CourseFiltersProps } from '../types/course.types';
 import { levels } from '../lib/sort.level';
 import { priceOptions } from '../lib/price.option';
 import { useCourseCategoriesQuery } from '../api/courses.api';
-import { useEffect } from 'react';
 
 function FilterContent({
   selectedCategory,
@@ -21,10 +20,6 @@ function FilterContent({
   onPriceChange,
 }: CourseFiltersProps) {
   const { data: categories } = useCourseCategoriesQuery();
-
-  useEffect(() => {
-    console.log(categories);
-  }, [categories]);
 
   if (!categories?.length) return;
 
