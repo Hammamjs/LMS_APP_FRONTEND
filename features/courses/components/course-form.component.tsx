@@ -73,8 +73,6 @@ export function CourseFormComponent({ mode, course }: Props) {
     if (isEdit && course) {
       reset(mapCourseToForm(course));
       setImageUrl(course.image);
-
-      console.log(course);
     }
   }, [course, reset, isEdit]);
 

@@ -10,7 +10,6 @@ import {
   Button,
 } from '@/shared/ui';
 import { useGetUsers } from '@/features/users/hooks';
-import { useEffect } from 'react';
 import { InstructorStats } from './instructor.stats';
 
 const instructors = [
@@ -66,10 +65,6 @@ const instructors = [
 
 export function InstructorsListComponent() {
   const { data: users, isLoading } = useGetUsers({ role: 'Instructor' });
-
-  useEffect(() => {
-    console.log(users);
-  }, [users, isLoading]);
 
   return (
     <div className="container mx-auto py-6 space-y-6">

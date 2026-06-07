@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import { notFound } from 'next/navigation';
 import { CourseLeftContent } from './course-left-content';
 import { CourseRightContent } from './course-right-content';
@@ -9,14 +8,7 @@ import { useGetCourseByIdQuery } from '../hooks/use.course-by-id';
 import { CourseDetailsSkeleton } from './course-details.skeletion';
 
 export function CourseDetailsComponent({ id }: { id: string }) {
-  const { course, isLoading, isError, error } = useGetCourseByIdQuery(
-    id as string,
-  );
-
-  useEffect(() => {
-    if (isError) console.log(error);
-    console.log(course);
-  }, [isLoading]);
+  const { course, isLoading } = useGetCourseByIdQuery(id as string);
 
   if (isLoading) {
     return <CourseDetailsSkeleton />;

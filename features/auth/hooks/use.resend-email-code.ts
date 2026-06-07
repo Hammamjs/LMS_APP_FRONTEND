@@ -10,7 +10,6 @@ export const useResendEmailCode = () => {
       const response = await trigger({ email }).unwrap();
       toast({ title: response.message });
     } catch (err) {
-      console.log(err);
       toast({ title: 'Failed to resend code.' });
     }
   };

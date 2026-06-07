@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 
-const protectedRoutes = ['/dashboard']; // '/checkout',
+const protectedRoutes = ['/dashboard', '/checkout']; // '/checkout',
 
 // this for who are logged in already
 const authPages = ['/sign-in', '/signup', '/reset-password'];
@@ -19,9 +19,9 @@ export function proxy(request: NextRequest) {
   const cookie = request.cookies;
   const token = cookie.get('refreshToken')?.value;
 
-  // if (token && isAuthPagesProtected) {
-  //   return NextResponse.redirect(new URL('/dashboard', request.url));
-  // }
+  if (token && isAuthPagesProtected) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
 
   if (isProtected && !token) {
     const loginUrl = new URL('/sign-in', request.url);
@@ -33,5 +33,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/sign-in', '/signup'], // '/checkout/:path*',
+  matcher: ['/dashboard/:path*', '/sign-in', '/signup', '/checkout/:path*'],
 };

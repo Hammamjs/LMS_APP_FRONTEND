@@ -12,8 +12,6 @@ export const useUserEnrolled = (courseId: string, userId: string) => {
     { skip: !userId || !courseId },
   );
 
-  console.log('From Hook', enrollment);
-
   return {
     isEnrolled: !!(isSuccess && enrollment && enrollment.courseId === courseId),
     isCheckingUserEnrollment: isLoading,

@@ -49,10 +49,6 @@ export function SignUpComponent() {
     },
   });
 
-  useEffect(() => {
-    if (isError) console.log(error);
-  }, [isError]);
-
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
       <div className="grid w-full max-w-5xl gap-8 lg:grid-cols-2">

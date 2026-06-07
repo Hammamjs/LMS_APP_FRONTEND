@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense, useEffect } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
@@ -60,10 +60,6 @@ export function CheckoutContent() {
   if (!course) return null;
 
   const { pay, isLoading, isSuccess, data } = usePaymentMutation();
-
-  useEffect(() => {
-    console.log(data);
-  }, [isLoading, isSuccess]);
 
   const finalPrice = calcDiscount(course.originalPrice, course.discountPrice);
 

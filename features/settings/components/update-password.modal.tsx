@@ -47,7 +47,6 @@ export const UpdatePasswordModal = ({
 
     if (!result.success) {
       result.error.errors.forEach((e) => {
-        console.log(e);
         toast({ title: e.message });
       });
       return;

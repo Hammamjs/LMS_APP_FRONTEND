@@ -22,7 +22,6 @@ const useSignInMutationAction = () => {
   const onSubmit = async (data: SignInValidationSchemaType) => {
     try {
       const res = await signin(data).unwrap();
-      console.log(res);
       router.push(from);
       dispatch(setCredentials(res));
     } catch (err: any) {
