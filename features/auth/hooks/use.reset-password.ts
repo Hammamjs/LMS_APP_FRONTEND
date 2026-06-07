@@ -7,7 +7,6 @@ export const useResetPassword = () => {
   const resetPassword = async (
     data: TResetPasswordSchema & { email: string },
   ) => {
-    console.log(data);
     return await trigger({ ...data }).unwrap();
   };
 

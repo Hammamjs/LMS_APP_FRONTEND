@@ -11,7 +11,6 @@ export const useOnSubmitLesson = () => {
     const result = AddLessonSchema.safeParse(data);
 
     if (!result.success) {
-      console.log(result.error.issues);
       result.error.issues.forEach((e) => {
         toast({ title: e.message, variant: 'destructive' });
       });
@@ -27,8 +26,6 @@ export const useOnSubmitLesson = () => {
       toast({ title: 'Failed to add lesson' });
       console.log('Error', err);
     }
-
-    console.log(data);
   };
 
   return {

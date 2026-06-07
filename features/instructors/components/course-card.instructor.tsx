@@ -15,7 +15,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useDeleteCourseMutationAction } from '@/features/courses/hooks/use.delete-course.mutation.action';
 import { useToast } from '@/shared/hooks';
-import { useEffect } from 'react';
 
 type CourseCardInstructorProps = { course: Course };
 
@@ -42,10 +41,6 @@ const CourseCardInstructor = ({ course }: CourseCardInstructorProps) => {
       toast({ title: 'Deleting course failed please try again' });
     }
   };
-
-  useEffect(() => {
-    if (isError) console.log(error);
-  }, [isError, error]);
 
   return (
     <Card className="overflow-hidden p-0">

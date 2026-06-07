@@ -1,8 +1,5 @@
 import { baseApi } from '@/shared/api/create-base.api';
-import {
-  Notification,
-  NotificationResponse,
-} from '../types/notification.types';
+import { NotificationResponse } from '../types/notification.types';
 import { notificationKey } from '../constants';
 
 export const NotificationApi = baseApi.injectEndpoints({
@@ -13,7 +10,6 @@ export const NotificationApi = baseApi.injectEndpoints({
         credentials: 'include',
       }),
       providesTags: (result) => {
-        console.log(result);
         return result
           ? [
               ...result.data.map((n) => notificationKey.details(n.id)),

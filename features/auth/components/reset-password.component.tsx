@@ -58,8 +58,6 @@ export function ResetPasswordComponent() {
     try {
       const email = getObjectFromSessionStorage('resetEmail');
 
-      console.log(email);
-
       await resetPassword({ ...data, email });
 
       removeFromSessionStorage('resetEmail');

@@ -51,15 +51,12 @@ export function VerifyEmailComponent() {
   const handleVerify = async () => {
     if (code.length !== 6) return;
     if (!email) return;
-    console.log(code, email);
     await verify(code, email);
   };
 
   const handleResend = async () => {
-    console.log('Email');
     if (secondsLeft > 0) return;
     setSecondsLeft(45);
-    console.log(email);
     if (!email) return;
     await resend(email);
   };

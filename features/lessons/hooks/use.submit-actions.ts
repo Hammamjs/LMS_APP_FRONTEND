@@ -30,7 +30,6 @@ export const useOnSubmitActions = ({ setValue, lesson }: Props) => {
 
     if (!result.success) {
       result.error.issues.map((e) => {
-        console.log(e.path);
         toast({ title: e.message });
       });
       return;

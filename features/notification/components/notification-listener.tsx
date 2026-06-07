@@ -10,16 +10,12 @@ export const NotificationListener = ({ token }: { token: string }) => {
   useEffect(() => {
     if (!token) return;
 
-    console.log('Notification listener is working');
-
     const socket = createNotificationSocket(token);
     socket.on('connect', () => {
       console.log('Connected ', socket.id);
     });
 
     socket.on('notification:new', (notification) => {
-      console.log('Notification ', notification);
-
       dispatch(
         NotificationApi.util.updateQueryData(
           'getNotifications',

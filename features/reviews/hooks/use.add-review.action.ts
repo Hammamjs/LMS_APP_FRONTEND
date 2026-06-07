@@ -5,7 +5,6 @@ export const useAddReviewAction = () => {
   const [trigger, result] = useAddReviewMutation();
 
   const add = async (data: TReviewSchema) => {
-    console.log('From use action ', data);
     await trigger(data).unwrap();
   };
 

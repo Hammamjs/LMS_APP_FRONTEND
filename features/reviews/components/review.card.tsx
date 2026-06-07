@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/features/auth/store';
 import { useRemoveReviewAction } from '../hooks/use.remove-review.action';
 import { useToast } from '@/shared/hooks';
-import { useEffect } from 'react';
 
 export type Props = {
   review: Review;
@@ -19,12 +18,7 @@ export const ReviewCard = ({ review, onEdit }: Props) => {
 
   const isUserReview = review.userId == userId;
 
-  const {
-    remove,
-    isLoading: isDeleting,
-    isError,
-    error,
-  } = useRemoveReviewAction();
+  const { remove, isLoading: isDeleting } = useRemoveReviewAction();
 
   const { toast } = useToast();
 
@@ -36,10 +30,6 @@ export const ReviewCard = ({ review, onEdit }: Props) => {
       toast({ title: 'Failed to delete review please try again' });
     }
   };
-
-  useEffect(() => {
-    if (isError) console.log(error);
-  }, [isError, error]);
 
   return (
     <li className="flex gap-3 border-t pt-4 first:border-t-0 first:pt-0">
