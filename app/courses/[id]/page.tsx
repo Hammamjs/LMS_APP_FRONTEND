@@ -34,15 +34,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const course = await getCourse(id);
 
   return {
-    title: `${course.data.title} | Learn-hub`,
-    description:
-      course.data.description?.slice(0, 160) || 'Learn with this course.',
-    keywords: [
-      course.data.title,
-      course.data.category,
-      'online course',
-      'education',
-    ],
+    title: `${course.title} | Learn-hub`,
+    description: course.description?.slice(0, 160) || 'Learn with this course.',
+    keywords: [course.title, course.category, 'online course', 'education'],
   };
 }
 

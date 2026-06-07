@@ -3,6 +3,7 @@ import {
   Button,
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -18,8 +19,9 @@ type MobileFiltersProps = {
 
 const MobileFilters = ({ activeFilters, ...props }: MobileFiltersProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
   return (
-    <div className="lg:hidden">
+    <div className="block md:hidden">
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button variant="outline" className="gap-2">
@@ -50,6 +52,9 @@ const MobileFilters = ({ activeFilters, ...props }: MobileFiltersProps) => {
                 </Button>
               )}
             </div>
+            <SheetDescription className="sr-only">
+              Narrow down courses by category, level, and price.
+            </SheetDescription>
           </SheetHeader>
           <div className="mt-6">
             <FilterContent {...props} />

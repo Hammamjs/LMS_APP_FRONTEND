@@ -16,7 +16,7 @@ export function CourseDetailsComponent({ id }: { id: string }) {
   useEffect(() => {
     if (isError) console.log(error);
     console.log(course);
-  }, [isLoading]);
+  }, [isLoading, isError]);
 
   if (isLoading) {
     return <CourseDetailsSkeleton />;

@@ -96,8 +96,9 @@ export const CoursesApi = baseApi.injectEndpoints({
       providesTags: (_result, _error, { id }) => [courseKey.details(id)],
     }),
 
-    courseCategories: builder.query<{ data: string[] }, void>({
+    courseCategories: builder.query<string[], void>({
       query: () => '/courses/categories',
+      transformResponse: (response: { data: string[] }) => response.data,
     }),
 
     createCourse: builder.mutation<Course, CourseRequest>({
