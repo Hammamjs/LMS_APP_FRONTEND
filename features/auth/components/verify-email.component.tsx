@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { MailCheck, ArrowLeft, Loader2, CheckCircle2 } from 'lucide-react';
 import {
   Card,
@@ -16,50 +15,20 @@ import {
 } from '@/shared/ui';
 import { cn } from '@/shared/lib';
 import Link from 'next/link';
-import { useResendEmailCode } from '../hooks/use.resend-email-code';
-import { useVerifyEmail } from '../hooks/use.verify-email.hook';
-import { getObjectFromSessionStorage } from '@/shared/lib/session-storage.helper';
+import { useVerifyEmail } from '../hooks/use.verify-email';
 
 export function VerifyEmailComponent() {
-  const [code, setCode] = useState('');
-  const [email, setEmail] = useState('');
-  const [secondsLeft, setSecondsLeft] = useState(45);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  const { resend } = useResendEmailCode();
   const {
-    verify,
-    isLoading: isVerifying,
+    code,
+    setCode,
+    email,
+    secondsLeft,
+    isVerifying,
     isError,
     isSuccess,
+    handleVerify,
+    handleResend,
   } = useVerifyEmail();
-
-  useEffect(() => {
-    const storedEmail = getObjectFromSessionStorage('verifyEmail');
-    if (storedEmail) setEmail(storedEmail);
-  }, []);
-
-  useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setSecondsLeft((s) => (s > 0 ? s - 1 : 0));
-    }, 1000);
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
-
-  const handleVerify = async () => {
-    if (code.length !== 6) return;
-    if (!email) return;
-    await verify(code, email);
-  };
-
-  const handleResend = async () => {
-    if (secondsLeft > 0) return;
-    setSecondsLeft(45);
-    if (!email) return;
-    await resend(email);
-  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-background via-background to-primary/5 flex flex-col">

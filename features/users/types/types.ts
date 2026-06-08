@@ -1,4 +1,4 @@
-import { Course } from '@/features/courses';
+import { Course } from '@/features/courses/types';
 
 export type Role = 'Student' | 'Instructor' | 'Admin';
 
