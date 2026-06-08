@@ -1,5 +1,7 @@
 import { baseApi } from '@/shared/api/create-base.api';
-import { ResetPasswordRequest } from '../types/types';
+import { AuthState } from '../types';
+import { setSessionStorage } from '@/shared/lib/session-storage.helper';
+import { setCredentials } from '../store';
 
 export const VerifyEmailApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -11,15 +13,24 @@ export const VerifyEmailApi = baseApi.injectEndpoints({
       }),
     }),
 
-    verifyEmail: builder.mutation<
-      { message: string },
-      { code: string; email: string }
-    >({
+    verifyEmail: builder.mutation<AuthState, { code: string; email: string }>({
       query: ({ code, email }) => ({
         url: '/auth/verify-email',
         method: 'POST',
         body: { code, email },
       }),
+      transformResponse: (response: { data: AuthState }) => response.data,
+      onQueryStarted: async (_queryArgs, { dispatch, queryFulfilled }) => {
+        try {
+          const { data } = await queryFulfilled;
+          if (data.accessToken) {
+            setSessionStorage('accessToken', data.accessToken);
+            dispatch(setCredentials({ ...data }));
+          }
+        } catch (err) {
+          console.error('Login failed', err);
+        }
+      },
     }),
   }),
 });

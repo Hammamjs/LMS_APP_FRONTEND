@@ -47,9 +47,9 @@ export function ResetPasswordSuccessComponent() {
             </ul>
           </div>
 
-          {/* Sign In Button */}
+          {/* dashboard  Button */}
           <Button asChild className="w-full">
-            <Link href="/sign-in">Continue to Sign In</Link>
+            <Link href="/dashboard">Continue to Dashboard</Link>
           </Button>
 
           {/* Home Link */}

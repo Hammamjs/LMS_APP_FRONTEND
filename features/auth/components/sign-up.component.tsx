@@ -27,13 +27,12 @@ import { useSignUp } from '../hooks/use.sign-up';
 import { useForm } from 'react-hook-form';
 import { SignUpSchemaType } from '../schema/sign-up.schema';
 import Benefits from './benefits.component';
-import { useEffect } from 'react';
 
 export function SignUpComponent() {
   const { agreeTerms, setAgreeTerms, setShowPassword, showPassword } =
     useSignUpUi();
 
-  const { onSubmit, isError, error, isLoading } = useSignUp();
+  const { onSubmit, isLoading } = useSignUp();
 
   const {
     register,

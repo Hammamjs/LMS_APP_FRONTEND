@@ -15,7 +15,7 @@ export const authApi = baseApi.injectEndpoints({
         body,
       }),
       transformResponse: (response: { data: AuthState }) => response.data,
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
           if (data.accessToken) {

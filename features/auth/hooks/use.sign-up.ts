@@ -7,7 +7,7 @@ import { setSessionStorage } from '@/shared/lib/session-storage.helper';
 export const useSignUp = () => {
   const router = useRouter();
 
-  const { signup, isLoading, error, isError } = useSignUpMutationAction();
+  const { signup, isLoading } = useSignUpMutationAction();
 
   const { toast } = useToast();
 
@@ -38,7 +38,5 @@ export const useSignUp = () => {
   return {
     onSubmit,
     isLoading,
-    error,
-    isError,
   };
 };
