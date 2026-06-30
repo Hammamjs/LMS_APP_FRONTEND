@@ -53,7 +53,7 @@ export function CategoryCoursesBySlugComponent({ slug }: Props) {
     notFound();
   }
 
-  if (!categories?.data.length) return;
+  if (!categories?.length) return;
 
   return (
     <div className="min-h-screen">
@@ -179,7 +179,7 @@ export function CategoryCoursesBySlugComponent({ slug }: Props) {
 
           {/* Browse Other Categories */}
           <BrowseOtherCategories
-            categories={categories.data ?? []}
+            categories={categories ?? []}
             slug={convertSlug}
           />
         </div>

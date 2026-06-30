@@ -1,13 +1,11 @@
 'use client';
 
 import { useCourseCategoriesQuery } from '@/features/courses/api/courses.api';
-import { useRouter } from 'next/navigation';
 import { CategoriesSkeleton } from './categories.skeletion';
 import { HeroSection } from './hero.section';
 import { CategoriesList } from './categories-list';
 import { Stats } from './stat-section';
 import useCourseResult from '@/features/courses/hooks/use.get.courses';
-import { useEffect } from 'react';
 
 export function CategoriesComponent() {
   const { data: categories, isLoading } = useCourseCategoriesQuery();
@@ -23,14 +21,14 @@ export function CategoriesComponent() {
       <section className="py-12 lg:py-16">
         <div className="container mx-auto px-4">
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <CategoriesList categories={categories?.data ?? []} />
+            <CategoriesList categories={categories ?? []} />
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
       <Stats
-        categoriesLength={categories?.data.length ?? 0}
+        categoriesLength={categories?.length ?? 0}
         coursesLength={courses?.length ?? 0}
       />
     </div>
